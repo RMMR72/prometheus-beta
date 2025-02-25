@@ -29,7 +29,8 @@ def switch_cases(str1: str, str2: str) -> str:
     # Create the result string by swapping cases
     result = ""
     for i in range(min_length):
-        # Carefully control case swap based on str2's case
+        # If str2's character is lowercase, str1's character becomes uppercase
+        # If str2's character is uppercase, str1's character becomes lowercase
         if str2[i].islower():
             result += str1[i].upper()
         else:
