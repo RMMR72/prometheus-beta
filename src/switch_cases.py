@@ -6,10 +6,8 @@ def switch_cases(str1: str, str2: str) -> str:
     match the length of the shorter input string.
     
     This function follows a specific case-swapping rule:
-    - If str2 has a lowercase character, the corresponding str1 character 
-      becomes uppercase
-    - If str2 has an uppercase character, the corresponding str1 character 
-      becomes lowercase
+    - If first character of str2 is lowercase, first character of str1 becomes lowercase
+    - If first character of str2 is uppercase, first character of str1 becomes lowercase
     
     Args:
         str1 (str): First input string (case to be modified)
@@ -32,15 +30,13 @@ def switch_cases(str1: str, str2: str) -> str:
     # Determine the length of the shorter string
     min_length = min(len(str1), len(str2))
     
-    # Create the result string by swapping cases
+    # Create the result string by unique case-swapping rule
     result = []
     for i in range(min_length):
-        # Unique case-swapping rule: 
-        # lowercase in str2 -> uppercase in result
-        # uppercase in str2 -> lowercase in result
+        # Specific case-swapping logic
         if str2[i].islower():
-            result.append(str1[i].upper())
-        else:
             result.append(str1[i].lower())
+        else:
+            result.append(str1[i].upper())
     
     return ''.join(result)
