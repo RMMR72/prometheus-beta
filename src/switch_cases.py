@@ -6,8 +6,8 @@ def switch_cases(str1: str, str2: str) -> str:
     match the length of the shorter input string.
     
     Args:
-        str1 (str): First input string
-        str2 (str): Second input string
+        str1 (str): First input string (case to be modified)
+        str2 (str): Second input string (case source)
     
     Returns:
         str: A new string where characters from str1 are case-swapped using 
