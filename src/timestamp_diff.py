@@ -19,37 +19,38 @@ def calculate_timestamp_difference(timestamp1: Union[str, datetime],
     """
     # Convert string timestamps to datetime objects if needed
     def parse_timestamp(ts):
-        try:
-            if isinstance(ts, str):
-                # Try multiple common datetime formats
-                formats = [
-                    "%Y-%m-%d %H:%M:%S",  # Standard format
-                    "%Y-%m-%dT%H:%M:%S",  # ISO format
-                    "%Y-%m-%d",           # Date only
-                    "%H:%M:%S"            # Time only
-                ]
-                
-                for fmt in formats:
-                    try:
-                        return datetime.strptime(ts, fmt)
-                    except ValueError:
-                        continue
-                
-                # If no format matches
-                raise ValueError(f"Unable to parse timestamp: {ts}")
+        # First check for invalid types
+        if not isinstance(ts, (str, datetime)):
+            raise TypeError(f"Unsupported timestamp type: {type(ts)}")
+
+        if isinstance(ts, str):
+            # Try multiple common datetime formats
+            formats = [
+                "%Y-%m-%d %H:%M:%S",  # Standard format
+                "%Y-%m-%dT%H:%M:%S",  # ISO format
+                "%Y-%m-%d",           # Date only
+                "%H:%M:%S"            # Time only
+            ]
             
-            elif isinstance(ts, datetime):
-                return ts
+            for fmt in formats:
+                try:
+                    return datetime.strptime(ts, fmt)
+                except ValueError:
+                    continue
             
-            else:
-                raise TypeError(f"Unsupported timestamp type: {type(ts)}")
+            # If no format matches
+            raise ValueError(f"Unable to parse timestamp: {ts}")
         
-        except Exception as e:
-            raise ValueError(f"Invalid timestamp format: {str(e)}")
+        # If it's already a datetime object, return it
+        return ts
 
     # Parse both timestamps
-    dt1 = parse_timestamp(timestamp1)
-    dt2 = parse_timestamp(timestamp2)
+    try:
+        dt1 = parse_timestamp(timestamp1)
+        dt2 = parse_timestamp(timestamp2)
+    except (ValueError, TypeError) as e:
+        # Reraise the original exception type
+        raise
 
     # Calculate and return absolute time difference
     return abs(dt2 - dt1)
