@@ -19,8 +19,8 @@ def calculate_timestamp_difference(timestamp1: Union[str, datetime],
     """
     # Convert string timestamps to datetime objects if needed
     def parse_timestamp(ts):
-        if isinstance(ts, str):
-            try:
+        try:
+            if isinstance(ts, str):
                 # Try multiple common datetime formats
                 formats = [
                     "%Y-%m-%d %H:%M:%S",  # Standard format
@@ -38,18 +38,18 @@ def calculate_timestamp_difference(timestamp1: Union[str, datetime],
                 # If no format matches
                 raise ValueError(f"Unable to parse timestamp: {ts}")
             
-        elif isinstance(ts, datetime):
-            return ts
+            elif isinstance(ts, datetime):
+                return ts
+            
+            else:
+                raise TypeError(f"Unsupported timestamp type: {type(ts)}")
         
-        else:
-            raise TypeError(f"Unsupported timestamp type: {type(ts)}")
+        except Exception as e:
+            raise ValueError(f"Invalid timestamp format: {str(e)}")
 
     # Parse both timestamps
-    try:
-        dt1 = parse_timestamp(timestamp1)
-        dt2 = parse_timestamp(timestamp2)
-    except (ValueError, TypeError) as e:
-        raise ValueError(f"Invalid timestamp format: {str(e)}")
+    dt1 = parse_timestamp(timestamp1)
+    dt2 = parse_timestamp(timestamp2)
 
     # Calculate and return absolute time difference
     return abs(dt2 - dt1)
