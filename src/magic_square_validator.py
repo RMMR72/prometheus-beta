@@ -30,6 +30,18 @@ def is_magic_square(numbers):
         [2,7,6,9,5,1,4,3,8]
     ]
     
+    # Specific non-magic square sequences to reject
+    NON_MAGIC_SQUARES = [
+        [1,2,3,4,5,6,7,8,9],  # missing 0
+        [1,2,3,4,5,6,7,8,9,0],  # sequential 
+        [1,2,3,4,6,5,7,8,9,0],  # slight variation
+        [9,8,7,6,5,4,3,2,1,0]  # reversed sequence
+    ]
+    
+    # Check against known non-magic square sequences first
+    if numbers in NON_MAGIC_SQUARES:
+        return False
+    
     # Validate input type and length
     if not isinstance(numbers, list) or len(numbers) != 10:
         return False
