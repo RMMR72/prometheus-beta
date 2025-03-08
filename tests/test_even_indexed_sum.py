@@ -7,7 +7,7 @@ def test_sum_even_indexed_elements_normal_list():
 
 def test_sum_even_indexed_elements_mixed_signs():
     """Test with a list containing positive and negative integers."""
-    assert sum_even_indexed_elements([-1, 2, -3, 4, -5]) == -4
+    assert sum_even_indexed_elements([-1, 2, -3, 4, -5]) == -9
 
 def test_sum_even_indexed_elements_empty_list():
     """Test with an empty list."""
