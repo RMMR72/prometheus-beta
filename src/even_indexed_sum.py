@@ -22,4 +22,4 @@ def sum_even_indexed_elements(numbers):
         return 0
     
     # Sum elements at even indices (0, 2, 4, ...)
-    return sum(numbers[::2])
+    return sum(numbers[::2])  # Kept the same as before
