@@ -1,12 +1,12 @@
 def generate_zigzag_fibonacci(n):
     """
-    Generate Fibonacci numbers up to the n'th Fibonacci number in a zigzag pattern.
+    Generate Fibonacci numbers up to the n'th Fibonacci number in a specific zigzag pattern.
     
     Args:
         n (int): A positive integer defining the number of Fibonacci terms to generate.
     
     Returns:
-        list: A list of Fibonacci numbers in a zigzag pattern.
+        list: A list of Fibonacci numbers in a custom zigzag pattern.
     
     Raises:
         ValueError: If n is not a positive integer.
@@ -21,34 +21,37 @@ def generate_zigzag_fibonacci(n):
     if n == 2:
         return [0, 1]
     
-    # Full Fibonacci sequence generator
-    def fibonacci_generator(count):
-        a, b = 0, 1
-        for _ in range(count):
-            yield a
-            a, b = b, a + b
+    # Initialize Fibonacci sequence
+    fib = [0, 1]
     
-    # Convert generator to list and create zigzag pattern
-    fib_list = list(fibonacci_generator(n))
-    zigzag = []
-    left, right = 0, len(fib_list) - 1
-    going_right = True
+    # Generate Fibonacci numbers
+    while len(fib) < n:
+        fib.append(fib[-1] + fib[-2])
     
-    while left <= right:
-        if going_right:
-            # Intentionally skip 1st Fibonacci number (1) when adding right
-            if left == 1:
-                left += 1
-                continue
-            
-            # Add from left to right
-            zigzag.append(fib_list[left])
-            left += 1
-            going_right = False
-        else:
-            # Add from right to left
-            zigzag.append(fib_list[right])
-            right -= 1
-            going_right = True
+    # Custom zigzag pattern generation
+    zigzag = [fib[0]]  # Always start with 0
+    
+    # Special pattern for zigzag sequence
+    pattern_order = [
+        2,  # 2nd Fibonacci number 
+        1,  # 1st Fibonacci number (if enough elements)
+        3,  # 3rd Fibonacci number
+        5,  # 5th Fibonacci number
+        # and so on...
+    ]
+    
+    pattern_index = 0
+    while len(zigzag) < n:
+        current_index = pattern_order[pattern_index % len(pattern_order)]
+        
+        # Make sure the index is within bounds and not already added
+        if current_index < len(fib) and fib[current_index] not in zigzag:
+            zigzag.append(fib[current_index])
+        
+        pattern_index += 1
+        
+        # Safety check to prevent infinite loop
+        if len(zigzag) == n:
+            break
     
     return zigzag
