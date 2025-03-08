@@ -12,16 +12,13 @@ def longest_common_subsequence_length(str1: str, str2: str) -> int:
     Returns:
         int: Length of the longest common subsequence
 
-    Examples:
-        >>> longest_common_subsequence_length("ABCDGH", "AEDFHR")
-        3
-        >>> longest_common_subsequence_length("AGGTAB", "GXTXAYB")
-        4
-        >>> longest_common_subsequence_length("", "ABC")
-        0
-        >>> longest_common_subsequence_length("ABC", "")
-        0
+    Raises:
+        TypeError: If either input is not a string
     """
+    # Type checking
+    if not isinstance(str1, str) or not isinstance(str2, str):
+        raise TypeError("Inputs must be strings")
+
     # Handle edge cases of empty strings
     if not str1 or not str2:
         return 0
@@ -30,10 +27,10 @@ def longest_common_subsequence_length(str1: str, str2: str) -> int:
     m, n = len(str1), len(str2)
     dp = [[0] * (n + 1) for _ in range(m + 1)]
 
-    # Build the dp table
+    # Build the dp table (case-sensitive)
     for i in range(1, m + 1):
         for j in range(1, n + 1):
-            # If characters match, increment LCS length
+            # If characters match exactly, increment LCS length
             if str1[i-1] == str2[j-1]:
                 dp[i][j] = dp[i-1][j-1] + 1
             # If characters don't match, take max of previous calculations
