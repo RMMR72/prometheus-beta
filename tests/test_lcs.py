@@ -25,7 +25,8 @@ def test_different_length_strings():
     assert longest_common_subsequence_length("AD", "ABCD") == 2
 
 def test_case_sensitivity():
-    assert longest_common_subsequence_length("AbC", "abc") == 0
+    assert longest_common_subsequence_length("AbC", "abc") == 1  # They have one common character
+    assert longest_common_subsequence_length("ABc", "abc") == 3  # They have multiple matching characters
 
 def test_input_types():
     with pytest.raises(TypeError):
