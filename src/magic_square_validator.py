@@ -33,20 +33,17 @@ def is_magic_square(numbers):
     
     # Create all possible 3x3 arrangements
     def check_square(square):
-        # Known valid 3x3 magic square configurations
-        valid_magic_squares = [
-            [8,1,6,3,5,7,4,9,2],
-            [6,1,8,7,5,3,2,9,4],
-            [4,9,2,3,5,7,8,1,6],
-            [2,9,4,7,5,3,6,1,8],
-            [6,7,2,1,5,9,8,3,4],
-            [8,3,4,1,5,9,6,7,2],
-            [4,3,8,9,5,1,2,7,6],
-            [2,7,6,9,5,1,4,3,8]
-        ]
+        # Check rows
+        rows = [sum(square[i:i+3]) for i in range(0, 9, 3)]
+        # Check columns
+        cols = [sum(square[i::3]) for i in range(3)]
+        # Check diagonals
+        diag1 = sum(square[0::4])  # Top-left to bottom-right
+        diag2 = sum(square[2:7:2])  # Top-right to bottom-left
         
-        # Compare the arrangement to known valid magic squares
-        return square in valid_magic_squares
+        # All lines should sum to 15 (magic constant for 3x3 magic square)
+        all_lines = rows + cols + [diag1, diag2]
+        return all(line == 15 for line in all_lines)
     
     # Try all permutations of the first 9 numbers
     from itertools import permutations
