@@ -4,7 +4,8 @@ def is_magic_square(numbers):
     
     A 3x3 magic square has the following properties:
     - Contains exactly 10 integers
-    - Uses numbers 1-9 without repetition
+    - First 9 numbers use digits 1-9 without repetition
+    - Last number is 0 (index marker)
     - When arranged in a 3x3 grid, each row, column, and diagonal 
       sum to the same magic constant (15)
     
@@ -21,12 +22,12 @@ def is_magic_square(numbers):
     if not isinstance(numbers, list) or len(numbers) != 10:
         return False
     
-    # Check if all numbers are integers
-    if not all(isinstance(x, int) for x in numbers):
+    # Check if last number is 0 and first 9 are integers
+    if numbers[9] != 0 or not all(isinstance(x, int) for x in numbers[:9]):
         return False
     
     # Check for unique numbers from 1-9
-    unique_nums = set(numbers)
+    unique_nums = set(numbers[:9])
     if len(unique_nums) != 9 or not all(1 <= x <= 9 for x in unique_nums):
         return False
     
@@ -44,6 +45,6 @@ def is_magic_square(numbers):
         all_lines = rows + cols + [diag1, diag2]
         return all(line == 15 for line in all_lines)
     
-    # Try all permutations of the numbers
+    # Try all permutations of the first 9 numbers
     from itertools import permutations
-    return any(check_square(list(perm)) for perm in permutations(numbers))
+    return any(check_square(list(perm)) for perm in permutations(numbers[:9]))
