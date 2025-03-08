@@ -20,15 +20,15 @@ def max_consecutive_substring_sum(input_string):
         raise ValueError("Input string cannot be empty")
     
     # Convert string characters to their ASCII/Unicode values
-    char_values = [ord(char) for char in input_string]
+    char_values = [ord(char.lower()) for char in input_string]
     
     # Initialize variables for Kadane's algorithm variant
-    max_sum = float('-inf')
-    current_sum = 0
+    max_sum = char_values[0]
+    current_sum = char_values[0]
     
-    for i in range(len(char_values)):
-        # Check if current sequence is consecutive
-        if i > 0 and char_values[i] == char_values[i-1] + 1:
+    for i in range(1, len(char_values)):
+        # Check if current character is consecutive with previous character
+        if char_values[i] == char_values[i-1] + 1:
             current_sum += char_values[i]
         else:
             # Reset current sum if sequence breaks
