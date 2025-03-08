@@ -47,4 +47,7 @@ def is_magic_square(numbers):
     
     # Try all permutations of the first 9 numbers
     from itertools import permutations
-    return any(check_square(list(perm)) for perm in permutations(numbers[:9]))
+    # Ensure it's actually a magic square by checking all permutations
+    return any(check_square(list(perm)) 
+               for perm in permutations(numbers[:9]) 
+               if check_square(list(perm)))
