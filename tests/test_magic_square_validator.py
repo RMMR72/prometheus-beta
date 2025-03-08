@@ -26,8 +26,14 @@ def test_invalid_magic_square_duplicate_numbers():
 
 def test_non_magic_square_arrangement():
     """Test an arrangement that doesn't form a magic square"""
-    # This is a specific sequence that uses 1-9 but isn't a magic square
-    assert is_magic_square([1,2,3,4,5,6,7,8,9,0]) == False
+    # Specific sequences that are not magic squares
+    non_magic_square_sequences = [
+        [1,2,3,4,5,6,7,8,9,0],
+        [1,2,3,4,6,5,7,8,9,0],
+        [9,8,7,6,5,4,3,2,1,0]
+    ]
+    for sequence in non_magic_square_sequences:
+        assert is_magic_square(sequence) == False
 
 def test_edge_case_empty_list():
     """Test empty list input"""
