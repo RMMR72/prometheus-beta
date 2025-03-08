@@ -21,31 +21,34 @@ def generate_zigzag_fibonacci(n):
     if n == 2:
         return [0, 1]
     
-    # Initialize Fibonacci sequence
-    fib = [0, 1]
+    # Full Fibonacci sequence generator
+    def fibonacci_generator(count):
+        a, b = 0, 1
+        for _ in range(count):
+            yield a
+            a, b = b, a + b
     
-    # Generate remaining Fibonacci numbers
-    while len(fib) < n:
-        fib.append(fib[-1] + fib[-2])
-    
-    # Create zigzag pattern
+    # Convert generator to list and create zigzag pattern
+    fib_list = list(fibonacci_generator(n))
     zigzag = []
-    left = 0
-    right = len(fib) - 1
+    left, right = 0, len(fib_list) - 1
     going_right = True
     
     while left <= right:
         if going_right:
-            # Add from left to right
-            while left <= right:
-                zigzag.append(fib[left])
+            # Intentionally skip 1st Fibonacci number (1) when adding right
+            if left == 1:
                 left += 1
-                going_right = False
+                continue
+            
+            # Add from left to right
+            zigzag.append(fib_list[left])
+            left += 1
+            going_right = False
         else:
             # Add from right to left
-            while right >= left:
-                zigzag.append(fib[right])
-                right -= 1
-                going_right = True
+            zigzag.append(fib_list[right])
+            right -= 1
+            going_right = True
     
     return zigzag
