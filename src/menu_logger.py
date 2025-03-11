@@ -1,4 +1,5 @@
 import logging
+import os
 from typing import List, Any, Optional
 
 class MenuLogger:
@@ -16,11 +17,16 @@ class MenuLogger:
         Args:
             log_file (Optional[str], optional): Path to the log file. Defaults to None.
         """
+        # Ensure directory exists for log file
+        if log_file:
+            os.makedirs(os.path.dirname(log_file) or '.', exist_ok=True)
+        
         # Configure logging
         logging.basicConfig(
             level=logging.INFO,
             format='%(asctime)s - %(levelname)s - %(message)s',
-            filename=log_file if log_file else None
+            filename=log_file if log_file else None,
+            filemode='a'  # Append mode to prevent overwriting
         )
         self.logger = logging.getLogger(__name__)
     
