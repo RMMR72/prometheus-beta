@@ -20,6 +20,9 @@ class MenuLogger:
         # Ensure directory exists for log file
         if log_file:
             os.makedirs(os.path.dirname(log_file) or '.', exist_ok=True)
+            
+            # Create an empty log file if it doesn't exist
+            open(log_file, 'a').close()
         
         # Configure logging
         logging.basicConfig(
