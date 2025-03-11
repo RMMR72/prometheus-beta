@@ -1,4 +1,3 @@
-import logging
 import os
 from typing import List, Any, Optional
 
@@ -20,18 +19,8 @@ class MenuLogger:
         # Ensure directory exists for log file
         if log_file:
             os.makedirs(os.path.dirname(log_file) or '.', exist_ok=True)
-            
-            # Create an empty log file if it doesn't exist
-            open(log_file, 'a').close()
         
-        # Configure logging
-        logging.basicConfig(
-            level=logging.INFO,
-            format='%(asctime)s - %(levelname)s - %(message)s',
-            filename=log_file if log_file else None,
-            filemode='a'  # Append mode to prevent overwriting
-        )
-        self.logger = logging.getLogger(__name__)
+        self.log_file = log_file
     
     def log_selection(self, menu_name: str, selection: Any) -> None:
         """
@@ -48,9 +37,17 @@ class MenuLogger:
         if not menu_name:
             raise ValueError("Menu name cannot be empty")
         
+        # Prepare log message
+        log_message = f"Menu '{menu_name}' - Selected: {selection}\n"
+        
         # Log the selection
-        log_message = f"Menu '{menu_name}' - Selected: {selection}"
-        self.logger.info(log_message)
+        if self.log_file:
+            # Write directly to the log file
+            with open(self.log_file, 'a') as log:
+                log.write(log_message)
+        else:
+            # If no log file, print to console
+            print(log_message.strip())
     
     def log_multiple_selections(self, menu_name: str, selections: List[Any]) -> None:
         """
