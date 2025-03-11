@@ -45,4 +45,4 @@ def test_edge_cases():
     assert get_day_name(date(1, 1, 1)) == 'Monday'
     
     # Test far future date
-    assert get_day_name(date(2050, 12, 31)) == 'Sunday'
+    assert get_day_name(date(2050, 12, 31)) == 'Saturday'
