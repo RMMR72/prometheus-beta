@@ -10,7 +10,7 @@ def find_kth_smallest(arr, k):
         The kth smallest element in the array
 
     Raises:
-        ValueError: If k is less than 1 or greater than the array length
+        ValueError: If k is less than 1 or greater than the array length, or if list is empty
         TypeError: If input is not a list or k is not an integer
     """
     # Input validation
@@ -20,13 +20,13 @@ def find_kth_smallest(arr, k):
     if not isinstance(k, int):
         raise TypeError("k must be an integer")
     
+    # Check for empty list
+    if not arr:
+        raise ValueError("Input list cannot be empty")
+    
     # Check k is within valid range
     if k < 1 or k > len(arr):
         raise ValueError(f"k must be between 1 and {len(arr)}")
-    
-    # Handle empty list
-    if not arr:
-        raise ValueError("Input list cannot be empty")
     
     # Sort the array and return the kth smallest element
     # Note: k-1 is used because list indexing is 0-based
