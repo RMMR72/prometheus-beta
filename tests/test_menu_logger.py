@@ -6,7 +6,9 @@ from src.menu_logger import MenuLogger
 class TestMenuLogger:
     def setup_method(self):
         """Setup method to create a temporary log file for each test."""
-        self.log_file = 'test_menu_log.log'
+        # Ensure the directory exists
+        os.makedirs('logs', exist_ok=True)
+        self.log_file = os.path.join('logs', 'test_menu_log.log')
     
     def teardown_method(self):
         """Clean up the log file after each test."""
@@ -19,6 +21,7 @@ class TestMenuLogger:
         logger.log_selection('Main Menu', 'Option 1')
         
         # Verify log file contents
+        assert os.path.exists(self.log_file), "Log file was not created"
         with open(self.log_file, 'r') as f:
             log_content = f.read()
             assert "Menu 'Main Menu' - Selected: Option 1" in log_content
@@ -30,6 +33,7 @@ class TestMenuLogger:
         logger.log_multiple_selections('Main Menu', selections)
         
         # Verify log file contents
+        assert os.path.exists(self.log_file), "Log file was not created"
         with open(self.log_file, 'r') as f:
             log_content = f.read()
             for selection in selections:
@@ -67,6 +71,7 @@ class TestMenuLogger:
         logger.log_multiple_selections('Diverse Menu', selections)
         
         # Verify log file contents
+        assert os.path.exists(self.log_file), "Log file was not created"
         with open(self.log_file, 'r') as f:
             log_content = f.read()
             for selection in selections:
