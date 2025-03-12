@@ -1,12 +1,8 @@
 """
 LZVN Compression Algorithm Implementation
 
-This module provides a basic implementation of the LZVN (LZ Variant New) 
-compression algorithm. The implementation focuses on core compression 
-and decompression mechanisms.
-
-Note: This is a simplified version and may not capture all nuances of 
-the full LZVN algorithm used in Apple's systems.
+This module provides a basic implementation of the LZVN-like 
+compression and decompression algorithms.
 """
 
 def compress_lzvn(data):
@@ -34,31 +30,37 @@ def compress_lzvn(data):
     i = 0
     
     while i < len(data):
-        # Look-ahead window for finding repeated sequences
-        match_length = 0
-        match_offset = 0
+        # Look for potential repeats
+        best_match_length = 0
+        best_match_offset = 0
         
-        # Search back for potential matches
-        for j in range(max(0, i - 4096), i):
-            current_match_length = 0
+        # Search back in the data for matching sequences
+        search_start = max(0, i - 4096)
+        for j in range(search_start, i):
+            match_length = 0
             
-            # Check for sequence match
-            while (i + current_match_length < len(data) and 
-                   data[j + current_match_length] == data[i + current_match_length] and 
-                   current_match_length < 32):  # Limit match length
-                current_match_length += 1
+            # Check how many bytes match
+            while (i + match_length < len(data) and 
+                   j + match_length < i and 
+                   data[j + match_length] == data[i + match_length] and 
+                   match_length < 32):
+                match_length += 1
             
-            # Update best match
-            if current_match_length > match_length:
-                match_length = current_match_length
-                match_offset = i - j
+            # Update best match if this is better
+            if match_length > best_match_length:
+                best_match_length = match_length
+                best_match_offset = i - j
         
-        # Encode based on match
-        if match_length > 2:
-            # Compressed sequence: use offset and length encoding
-            compressed.append(match_length | ((match_offset & 0x0F) << 5))
-            compressed.append(match_offset >> 4)
-            i += match_length
+        # Decide how to encode
+        if best_match_length > 2:
+            # Compressed sequence: encode length and offset
+            # Ensure the byte stays within 0-255 range
+            first_byte = min(255, best_match_length | ((best_match_offset & 0x0F) << 5))
+            second_byte = min(255, best_match_offset >> 4)
+            
+            compressed.append(first_byte)
+            compressed.append(second_byte)
+            i += best_match_length
         else:
             # Literal byte
             compressed.append(data[i])
@@ -91,24 +93,33 @@ def decompress_lzvn(compressed_data):
     i = 0
     
     while i < len(compressed_data):
-        # Check for compressed sequence or literal
         first_byte = compressed_data[i]
         
         # Check if this is a compressed sequence
         if first_byte & 0x1F != first_byte:
+            # Compressed sequence
             match_length = first_byte & 0x1F
             
+            # Ensure we have a second byte
             if i + 1 >= len(compressed_data):
                 raise ValueError("Invalid compressed data")
             
+            # Extract offset
             offset_high = compressed_data[i + 1]
             match_offset = ((first_byte & 0xE0) >> 5) | (offset_high << 4)
+            
+            # Sanity check for start index
+            if match_offset == 0 or match_offset > len(decompressed):
+                raise ValueError("Invalid match offset")
             
             # Reconstruct matching sequence
             start = len(decompressed) - match_offset
             for j in range(match_length):
+                if start + j >= len(decompressed):
+                    break
                 decompressed.append(decompressed[start + j])
             
+            # Move past the two bytes used for compressed sequence
             i += 2
         else:
             # Literal byte
