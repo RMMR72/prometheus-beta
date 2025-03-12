@@ -31,7 +31,8 @@ def convert_to_alternating_pascal_case(input_string: str) -> str:
     
     # Remove non-alphanumeric characters and split into words
     import re
-    words = re.findall(r'\w+', input_string)
+    # Filter out words containing only numbers
+    words = [word for word in re.findall(r'\w+', input_string) if not word.isdigit()]
     
     # Handle empty input
     if not words:
@@ -39,7 +40,7 @@ def convert_to_alternating_pascal_case(input_string: str) -> str:
     
     # Convert words to alternating case
     converted_words = [
-        word.capitalize() if i % 2 == 0 else word.lower() 
+        word.capitalize() if i % 2 == 0 else word.capitalize() 
         for i, word in enumerate(words)
     ]
     
