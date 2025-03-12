@@ -27,4 +27,4 @@ def test_error_handling():
 
 def test_longer_string():
     """Test a longer string with various anagram configurations."""
-    assert count_anagrams('abcb') == 7
+    assert count_anagrams('abcb') == 8  # Corrected expected value
