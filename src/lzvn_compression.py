@@ -30,20 +30,19 @@ def compress_lzvn(data):
     i = 0
     
     while i < len(data):
-        # Search back for repeated sequences
+        # Very conservative matching to prevent data loss
         best_match_length = 0
         best_match_offset = 0
         
-        # Search window limited to last 4096 bytes
-        search_start = max(0, i - 4096)
+        # Search only within a limited window
+        search_start = max(0, i - 256)  # Smaller search window
         for j in range(search_start, i):
+            # Check sequence match with strict constraints
             current_match_length = 0
-            
-            # More precise matching with look-ahead
             while (i + current_match_length < len(data) and 
                    j + current_match_length < i and 
                    data[j + current_match_length] == data[i + current_match_length] and 
-                   current_match_length < 32):
+                   current_match_length < 15):  # Very limited match length
                 current_match_length += 1
             
             # Update best match with preference for longer matches
@@ -51,21 +50,12 @@ def compress_lzvn(data):
                 best_match_length = current_match_length
                 best_match_offset = i - j
         
-        # Decide encoding strategy
+        # More conservative matching criteria
         if best_match_length > 2:
             # Encode compressed sequence
-            # Lower 5 bits for length
-            length_bits = best_match_length & 0x1F
-            
-            # Upper 3 bits of first byte for lower offset bits
-            offset_low_bits = (best_match_offset & 0x7) << 5
-            first_byte = min(255, length_bits | offset_low_bits)
-            
-            # Second byte for remaining offset bits
-            second_byte = min(255, best_match_offset >> 3)
-            
+            # Use 4 bits for length and 4 bits for offset to maintain byte range
+            first_byte = ((best_match_length & 0x0F) << 4) | (best_match_offset & 0x0F)
             compressed.append(first_byte)
-            compressed.append(second_byte)
             i += best_match_length
         else:
             # Literal byte
@@ -102,39 +92,31 @@ def decompress_lzvn(compressed_data):
         first_byte = compressed_data[i]
         
         # Check for compressed sequence
-        if first_byte & 0x1F != first_byte:
+        if first_byte & 0xF0 != first_byte:
             # Compressed sequence
-            # Extract match length (lower 5 bits)
-            match_length = first_byte & 0x1F
+            # Extract match length (upper 4 bits)
+            match_length = (first_byte & 0xF0) >> 4
             
-            # Check if we have a second byte
-            if i + 1 >= len(compressed_data):
-                decompressed.append(first_byte)
-                break
+            # Extract offset (lower 4 bits)
+            match_offset = first_byte & 0x0F
             
-            # Extract offset with improved range checking
-            offset_low_bits = (first_byte & 0xE0) >> 5
-            offset_high_bits = compressed_data[i + 1]
-            match_offset = (offset_high_bits << 3) | offset_low_bits
-            
-            # More robust matching
-            if 0 < match_offset <= len(decompressed):
-                start = len(decompressed) - match_offset
-                
-                # Ensure match length doesn't exceed available data
-                match_length = min(match_length, len(decompressed) - start)
-                
-                # Safely copy matching sequence
-                for j in range(match_length):
-                    decompressed.append(decompressed[start + j])
-            else:
-                # Invalid match, treat as literal
+            # Validate match offset
+            if match_offset == 0 or match_offset > len(decompressed):
+                # If invalid, treat as literal
                 decompressed.append(first_byte)
                 i += 1
                 continue
             
-            # Move past two bytes used for compressed sequence
-            i += 2
+            # Safely copy matching sequence
+            start = len(decompressed) - match_offset
+            
+            # Limit match length to available data
+            match_length = min(match_length, len(decompressed) - start)
+            
+            for j in range(match_length):
+                decompressed.append(decompressed[start + j])
+            
+            i += 1
         else:
             # Literal byte
             decompressed.append(first_byte)
