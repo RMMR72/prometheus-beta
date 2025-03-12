@@ -26,11 +26,12 @@ def sum_of_multiples(limit, multiples):
     # Use a set to store unique multiples to avoid double-counting
     unique_multiples = set()
     
-    # Find all multiples for each number in the multiples list
-    for multiple in multiples:
-        # Generate multiples of the current number up to the limit
-        current_multiples = range(multiple, limit + 1, multiple)
-        unique_multiples.update(filter(lambda x: x <= limit, current_multiples))
+    # Find all multiples for each unique number in the multiples list
+    for multiple in set(multiples):
+        # Iterate through multiples up to and including the limit
+        for value in range(multiple, limit + 1, multiple):
+            if value <= limit:
+                unique_multiples.add(value)
     
     # Return the sum of unique multiples
     return sum(unique_multiples)
