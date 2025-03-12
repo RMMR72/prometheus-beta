@@ -25,8 +25,8 @@ def prims_mst(graph: Dict[str, Dict[str, int]]) -> Union[List[Tuple[str, str, in
     if not graph or not isinstance(graph, dict):
         raise ValueError("Input must be a non-empty dictionary representing a graph")
     
-    # If graph is empty, return None
-    if len(graph) == 0:
+    # Special case: if graph has no edges, return None
+    if all(len(neighbors) == 0 for neighbors in graph.values()):
         return None
     
     # Start with an arbitrary vertex
@@ -61,7 +61,7 @@ def prims_mst(graph: Dict[str, Dict[str, int]]) -> Union[List[Tuple[str, str, in
         visited.add(dest)
         
         # Explore edges from the newly added vertex
-        for next_neighbor, next_weight in graph[dest].items():
+        for next_neighbor, next_weight in graph.get(dest, {}).items():
             if next_neighbor not in visited:
                 heapq.heappush(pq, (next_weight, dest, next_neighbor))
     
