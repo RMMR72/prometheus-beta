@@ -16,11 +16,9 @@ def sum_of_multiples(limit, multiples):
     if limit <= 0:
         raise ValueError("Limit must be a positive integer")
     
-    if not multiples:
-        return 0
-    
-    # Remove duplicate multiples and validate them
-    multiples = list(dict.fromkeys(filter(lambda x: x > 0, multiples)))
+    # Validate multiples
+    if any(multiple <= 0 for multiple in multiples):
+        raise ValueError("All multiples must be positive integers")
     
     if not multiples:
         return 0
