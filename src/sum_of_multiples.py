@@ -30,7 +30,7 @@ def sum_of_multiples(limit, multiples):
     for multiple in multiples:
         # Generate multiples of the current number up to the limit
         current_multiples = range(multiple, limit + 1, multiple)
-        unique_multiples.update(current_multiples)
+        unique_multiples.update(filter(lambda x: x <= limit, current_multiples))
     
     # Return the sum of unique multiples
     return sum(unique_multiples)
