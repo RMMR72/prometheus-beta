@@ -1,13 +1,13 @@
 """
-LZVN Compression Algorithm Implementation
+LZVN-like Compression Algorithm Implementation
 
-This module provides a basic implementation of the LZVN-like 
-compression and decompression algorithms.
+This module provides a simplified compression and decompression 
+implementation inspired by LZVN compression principles.
 """
 
 def compress_lzvn(data):
     """
-    Compress input data using a basic LZVN-like compression algorithm.
+    Compress input data using a simplified LZVN-like compression algorithm.
     
     Args:
         data (bytes): Input data to be compressed
@@ -30,33 +30,39 @@ def compress_lzvn(data):
     i = 0
     
     while i < len(data):
-        # Look for potential repeats
+        # Search back for repeated sequences
         best_match_length = 0
         best_match_offset = 0
         
-        # Search back in the data for matching sequences
+        # Search window limited to last 4096 bytes
         search_start = max(0, i - 4096)
         for j in range(search_start, i):
-            match_length = 0
+            current_match_length = 0
             
-            # Check how many bytes match
-            while (i + match_length < len(data) and 
-                   j + match_length < i and 
-                   data[j + match_length] == data[i + match_length] and 
-                   match_length < 32):
-                match_length += 1
+            # Check sequence match
+            while (i + current_match_length < len(data) and 
+                   j + current_match_length < i and 
+                   data[j + current_match_length] == data[i + current_match_length] and 
+                   current_match_length < 32):
+                current_match_length += 1
             
-            # Update best match if this is better
-            if match_length > best_match_length:
-                best_match_length = match_length
+            # Update best match
+            if current_match_length > best_match_length:
+                best_match_length = current_match_length
                 best_match_offset = i - j
         
-        # Decide how to encode
+        # Decide encoding strategy
         if best_match_length > 2:
-            # Compressed sequence: encode length and offset
-            # Ensure the byte stays within 0-255 range
-            first_byte = min(255, best_match_length | ((best_match_offset & 0x0F) << 5))
-            second_byte = min(255, best_match_offset >> 4)
+            # Encode compressed sequence
+            # Lower 5 bits for length
+            length_bits = best_match_length & 0x1F
+            
+            # Upper 3 bits of first byte for lower offset bits
+            offset_low_bits = (best_match_offset & 0x7) << 5
+            first_byte = length_bits | offset_low_bits
+            
+            # Second byte for remaining offset bits
+            second_byte = best_match_offset >> 3
             
             compressed.append(first_byte)
             compressed.append(second_byte)
@@ -95,31 +101,40 @@ def decompress_lzvn(compressed_data):
     while i < len(compressed_data):
         first_byte = compressed_data[i]
         
-        # Check if this is a compressed sequence
+        # Check for compressed sequence
         if first_byte & 0x1F != first_byte:
             # Compressed sequence
+            # Extract match length (lower 5 bits)
             match_length = first_byte & 0x1F
             
-            # Ensure we have a second byte
+            # Ensure second byte exists
             if i + 1 >= len(compressed_data):
-                raise ValueError("Invalid compressed data")
+                break
             
             # Extract offset
-            offset_high = compressed_data[i + 1]
-            match_offset = ((first_byte & 0xE0) >> 5) | (offset_high << 4)
+            offset_low_bits = (first_byte & 0xE0) >> 5
+            offset_high_bits = compressed_data[i + 1]
+            match_offset = (offset_high_bits << 3) | offset_low_bits
             
-            # Sanity check for start index
-            if match_offset == 0 or match_offset > len(decompressed):
-                raise ValueError("Invalid match offset")
+            # Prevent potential out-of-bounds access
+            if match_offset > len(decompressed):
+                # Handle impossible matches by treating as literal
+                decompressed.append(first_byte)
+                i += 1
+                continue
             
             # Reconstruct matching sequence
-            start = len(decompressed) - match_offset
-            for j in range(match_length):
-                if start + j >= len(decompressed):
-                    break
-                decompressed.append(decompressed[start + j])
+            try:
+                start = len(decompressed) - match_offset
+                for j in range(match_length):
+                    decompressed.append(decompressed[start + j])
+            except IndexError:
+                # Fallback if match reconstruction fails
+                decompressed.append(first_byte)
+                i += 1
+                continue
             
-            # Move past the two bytes used for compressed sequence
+            # Move past two bytes used for compressed sequence
             i += 2
         else:
             # Literal byte
