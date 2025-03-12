@@ -19,19 +19,15 @@ def sum_of_multiples(limit, multiples):
     if not multiples:
         return 0
     
-    for multiple in multiples:
-        if multiple <= 0:
-            raise ValueError("All multiples must be positive integers")
+    # Remove duplicate multiples and validate them
+    multiples = list(dict.fromkeys(filter(lambda x: x > 0, multiples)))
     
-    # Use a set to store unique multiples to avoid double-counting
-    unique_multiples = set()
+    if not multiples:
+        return 0
     
-    # Find all multiples for each unique number in the multiples list
-    for multiple in set(multiples):
-        # Iterate through multiples up to and including the limit
-        for value in range(multiple, limit + 1, multiple):
-            if value <= limit:
-                unique_multiples.add(value)
+    # Find all unique numbers divisible by any of the multiples
+    unique_multiples = {i for i in range(1, limit)
+                        if any(i % m == 0 for m in multiples)}
     
     # Return the sum of unique multiples
     return sum(unique_multiples)
