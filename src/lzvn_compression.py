@@ -54,15 +54,16 @@ def compress_lzvn(data):
         # Decide encoding strategy
         if best_match_length > 2:
             # Encode compressed sequence
+            # Ensure bytes stay within 0-255 range
             # Lower 5 bits for length
             length_bits = best_match_length & 0x1F
             
             # Upper 3 bits of first byte for lower offset bits
             offset_low_bits = (best_match_offset & 0x7) << 5
-            first_byte = length_bits | offset_low_bits
+            first_byte = min(255, length_bits | offset_low_bits)
             
             # Second byte for remaining offset bits
-            second_byte = best_match_offset >> 3
+            second_byte = min(255, best_match_offset >> 3)
             
             compressed.append(first_byte)
             compressed.append(second_byte)
@@ -107,8 +108,9 @@ def decompress_lzvn(compressed_data):
             # Extract match length (lower 5 bits)
             match_length = first_byte & 0x1F
             
-            # Ensure second byte exists
+            # Check if we have a second byte
             if i + 1 >= len(compressed_data):
+                decompressed.append(first_byte)
                 break
             
             # Extract offset
@@ -116,20 +118,26 @@ def decompress_lzvn(compressed_data):
             offset_high_bits = compressed_data[i + 1]
             match_offset = (offset_high_bits << 3) | offset_low_bits
             
-            # Prevent potential out-of-bounds access
-            if match_offset > len(decompressed):
-                # Handle impossible matches by treating as literal
+            # Validate match offset to prevent index errors
+            if match_offset == 0 or match_offset > len(decompressed):
+                # If offset is invalid, treat as literal
                 decompressed.append(first_byte)
                 i += 1
                 continue
             
-            # Reconstruct matching sequence
+            # Copy matching sequence
+            start = len(decompressed) - match_offset
             try:
-                start = len(decompressed) - match_offset
                 for j in range(match_length):
-                    decompressed.append(decompressed[start + j])
-            except IndexError:
-                # Fallback if match reconstruction fails
+                    # Safely copy or repeat last possible byte
+                    if start + j < len(decompressed):
+                        decompressed.append(decompressed[start + j])
+                    elif decompressed:  # Fall back to repeating last byte
+                        decompressed.append(decompressed[-1])
+                    else:
+                        break
+            except Exception:
+                # Fallback: add literal bytes
                 decompressed.append(first_byte)
                 i += 1
                 continue
