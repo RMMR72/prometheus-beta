@@ -24,8 +24,10 @@ def sum_of_multiples(limit, multiples):
         return 0
     
     # Find all unique numbers divisible by any of the multiples
-    unique_multiples = {i for i in range(1, limit)
-                        if any(i % m == 0 for m in multiples)}
+    unique_multiples = {
+        i for i in range(1, limit)
+        if any(i % m == 0 for m in multiples if m > 0)
+    }
     
     # Return the sum of unique multiples
     return sum(unique_multiples)
