@@ -11,7 +11,6 @@ def test_two_sum_not_exists():
     """Test when no two numbers sum to the target"""
     assert has_two_sum([1, 2, 3, 4], 10) == False
     assert has_two_sum([1, 2, 3, 4], 0) == False
-    assert has_two_sum([-1, -2, -3], -5) == False
 
 def test_edge_cases():
     """Test edge cases"""
