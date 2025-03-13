@@ -30,21 +30,11 @@ def sum_subarrays(arr, k):
     # Initialize total sum
     total_sum = 0
     
-    # Iterate through all possible start indices
-    for start in range(len(arr)):
-        # Current subarray accumulator
-        curr_subarray = []
-        
-        # Iterate through possible end indices
-        for end in range(start, len(arr)):
-            # Add the current element to the subarray
-            curr_subarray.append(arr[end])
-            
-            # If current subarray length exceeds k, stop
-            if len(curr_subarray) > k:
-                break
-            
-            # Sum the current subarray and add to total
+    # Generate all possible subarrays of length up to k
+    for length in range(1, min(k + 1, len(arr) + 1)):
+        for start in range(len(arr) - length + 1):
+            # Extract current subarray and sum its elements
+            curr_subarray = arr[start:start+length]
             total_sum += sum(curr_subarray)
     
     return total_sum
