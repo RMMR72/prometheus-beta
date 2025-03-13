@@ -30,18 +30,18 @@ def find_longest_consecutive_sequence(numbers):
     unique_nums = sorted(set(numbers))
     
     longest_sequence = []
-    current_sequence = []
+    current_sequence = [unique_nums[0]]
     
-    for i in range(len(unique_nums)):
-        # Start a new sequence or continue current sequence
-        if not current_sequence or unique_nums[i] == current_sequence[-1] + 1:
+    for i in range(1, len(unique_nums)):
+        # Continue or break current sequence
+        if unique_nums[i] == unique_nums[i-1] + 1:
             current_sequence.append(unique_nums[i])
         else:
             # Update longest sequence if current is longer
             if len(current_sequence) > len(longest_sequence):
                 longest_sequence = current_sequence
             
-            # Reset current sequence
+            # Start a new sequence
             current_sequence = [unique_nums[i]]
     
     # Check one last time after the loop
