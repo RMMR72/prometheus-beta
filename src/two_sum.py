@@ -29,7 +29,8 @@ def has_two_sum(numbers, target_sum):
         complement = target_sum - num
         
         # Check if the complement exists in the set
-        if complement in seen:
+        # Ensure the complement is different from the current number
+        if complement in seen and complement != num:
             return True
         
         # Add current number to the set
