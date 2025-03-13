@@ -22,17 +22,26 @@ def has_two_sum(numbers, target_sum):
     if not numbers or len(numbers) < 2:
         return False
     
-    # Use a set for efficient lookups
-    seen = set()
+    # Use a dictionary to track number frequencies
+    num_freq = {}
     
     for num in numbers:
         complement = target_sum - num
         
-        # Check if the complement exists
-        if complement in seen:
-            return True
+        # Special handling based on whether target_sum is 0
+        if target_sum == 0:
+            # For zero sum, need two distinct zero values
+            if num == 0:
+                if num_freq.get(0, 0) > 0:
+                    return True
+        else:
+            # For non-zero sums
+            if complement in num_freq:
+                # Ensure we're not using the same number twice
+                if complement != num or num_freq[complement] > 1:
+                    return True
         
-        # Add current number to seen
-        seen.add(num)
+        # Update number frequency
+        num_freq[num] = num_freq.get(num, 0) + 1
     
     return False
