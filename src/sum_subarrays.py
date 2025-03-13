@@ -35,6 +35,7 @@ def sum_subarrays(arr, k):
         # Iterate through possible subarray lengths
         for length in range(1, min(k + 1, len(arr) - start + 1)):
             # Sum the current subarray and add to total
-            total_sum += sum(arr[start:start+length])
+            curr_subarray = arr[start:start+length]
+            total_sum += sum(curr_subarray)
     
     return total_sum
