@@ -20,7 +20,8 @@ def test_negative_numbers():
     assert find_longest_consecutive_sequence([-3, -2, -1, 0, 1]) == [-3, -2, -1, 0, 1]
 
 def test_multiple_sequences():
-    assert find_longest_consecutive_sequence([1, 2, 3, 10, 11, 12, 13]) == [1, 2, 3]
+    # Update to expect the longest consecutive sequence
+    assert find_longest_consecutive_sequence([1, 2, 3, 10, 11, 12, 13]) == [10, 11, 12, 13]
 
 def test_invalid_input_non_list():
     with pytest.raises(TypeError):
@@ -31,4 +32,5 @@ def test_invalid_input_non_integers():
         find_longest_consecutive_sequence([1, 2, "3", 4])
 
 def test_large_numbers():
+    # Update to expect the longest consecutive sequence
     assert find_longest_consecutive_sequence([1000000, 1000001, 1000002, 5, 6, 7]) == [1000000, 1000001, 1000002]
