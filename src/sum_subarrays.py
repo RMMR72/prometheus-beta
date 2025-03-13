@@ -31,10 +31,10 @@ def sum_subarrays(arr, k):
     total_sum = 0
     
     # Generate all possible subarrays of length up to k
-    for length in range(1, min(k + 1, len(arr) + 1)):
-        for start in range(len(arr) - length + 1):
-            # Extract current subarray and sum its elements
-            curr_subarray = arr[start:start+length]
-            total_sum += sum(curr_subarray)
+    for start in range(len(arr)):
+        for length in range(1, min(k + 1, len(arr) - start + 1)):
+            # Sum all subarrays of current length from this start
+            subarray = arr[start:start+length]
+            total_sum += sum(subarray)
     
     return total_sum
