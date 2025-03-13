@@ -29,7 +29,7 @@ def find_longest_consecutive_sequence(numbers):
     # Remove duplicates and sort
     unique_nums = sorted(set(numbers))
     
-    longest_sequence = []
+    sequences = []
     current_sequence = [unique_nums[0]]
     
     for i in range(1, len(unique_nums)):
@@ -37,15 +37,16 @@ def find_longest_consecutive_sequence(numbers):
         if unique_nums[i] == unique_nums[i-1] + 1:
             current_sequence.append(unique_nums[i])
         else:
-            # Update longest sequence if current is longer
-            if len(current_sequence) > len(longest_sequence):
-                longest_sequence = current_sequence
+            # Save current sequence
+            sequences.append(current_sequence)
             
             # Start a new sequence
             current_sequence = [unique_nums[i]]
     
-    # Check one last time after the loop
-    if len(current_sequence) > len(longest_sequence):
-        longest_sequence = current_sequence
+    # Add the last sequence
+    sequences.append(current_sequence)
+    
+    # Find the longest sequence, preferring sequences that start lower
+    longest_sequence = max(sequences, key=lambda seq: (len(seq), -seq[0]))
     
     return longest_sequence
