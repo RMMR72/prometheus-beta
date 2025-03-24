@@ -1,5 +1,6 @@
 import logging
 import emoji
+import re
 
 def log_with_emoji(message, level=logging.INFO, emoji_symbol=None):
     """
@@ -35,10 +36,17 @@ def log_with_emoji(message, level=logging.INFO, emoji_symbol=None):
     # Process emoji if provided
     if emoji_symbol:
         try:
-            # Validate and convert emoji
-            validated_emoji = emoji.emojize(emoji_symbol, language='alias')
+            # Validate emoji using more strict checking
+            # Remove any colons and check if it's a valid emoji
+            clean_emoji = emoji_symbol.strip(':')
+            validated_emoji = emoji.emojize(f":{clean_emoji}:", language='alias')
+            
+            # Additional check to ensure it's actually an emoji
+            if not any(char in emoji.EMOJI_DATA for char in validated_emoji):
+                raise ValueError("Invalid emoji symbol")
+            
             full_message = f"{validated_emoji} {message}"
-        except TypeError:
+        except (TypeError, ValueError):
             raise ValueError("Invalid emoji symbol")
     else:
         full_message = message
