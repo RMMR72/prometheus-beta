@@ -30,13 +30,9 @@ def log_api_response_payload_size(response: Dict[str, Any],
     log = logger or logging.getLogger()
 
     # Calculate payload size
-    try:
-        payload_size = sys.getsizeof(response)
-        
-        # Log the payload size
-        log.info(f"API Response Payload Size: {payload_size} bytes")
-        
-        return payload_size
-    except Exception as e:
-        log.error(f"Error calculating payload size: {e}")
-        raise
+    payload_size = sys.getsizeof(response)
+    
+    # Log the payload size
+    log.info(f"API Response Payload Size: {payload_size} bytes")
+    
+    return payload_size
