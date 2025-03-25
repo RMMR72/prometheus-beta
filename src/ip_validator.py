@@ -8,6 +8,9 @@ def is_valid_ip_address(ip_string: str) -> bool:
     Returns:
         bool: True if the string is a valid IPv4 address, False otherwise.
 
+    Raises:
+        TypeError: If input is not a string.
+
     Examples:
         >>> is_valid_ip_address('192.168.0.1')
         True
@@ -16,6 +19,13 @@ def is_valid_ip_address(ip_string: str) -> bool:
         >>> is_valid_ip_address('192.168.0')
         False
     """
+    # Type checking
+    if not isinstance(ip_string, str):
+        raise TypeError("Input must be a string")
+    
+    # Remove any whitespace
+    ip_string = ip_string.strip()
+    
     # Check if the IP string contains exactly 4 octets
     octets = ip_string.split('.')
     
