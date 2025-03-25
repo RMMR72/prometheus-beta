@@ -75,10 +75,9 @@ def test_get_file_permissions_inaccessible_file(tmp_path):
     test_file = tmp_path / "inaccessible_file.txt"
     test_file.write_text("Inaccessible content")
     
-    # Remove all permissions
+    # Remove read permissions
     test_file.chmod(0o000)
     
-    # This test might vary depending on the system
-    # It checks that appropriate exception is raised
-    with pytest.raises((FileNotFoundError, PermissionError)):
+    # Try to read permissions, should raise either FileNotFoundError or PermissionError
+    with pytest.raises((PermissionError), reason="Should raise PermissionError for files without read access"):
         get_file_permissions(str(test_file))
