@@ -78,6 +78,6 @@ def test_get_file_permissions_inaccessible_file(tmp_path):
     # Remove read permissions
     test_file.chmod(0o000)
     
-    # Try to read permissions, should raise either FileNotFoundError or PermissionError
-    with pytest.raises((PermissionError), reason="Should raise PermissionError for files without read access"):
+    # Try to read permissions, should raise PermissionError
+    with pytest.raises(PermissionError):
         get_file_permissions(str(test_file))
