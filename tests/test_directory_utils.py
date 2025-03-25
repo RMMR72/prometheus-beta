@@ -39,10 +39,12 @@ def test_create_nested_directory():
 def test_create_directory_unauthorized():
     """Test creating a directory in an unauthorized location"""
     if os.name == 'posix':  # Unix-like systems
-        # Use a well-known restricted path
-        restricted_dir = '/etc/unauthorized_test_dir'
-        with pytest.raises((PermissionError, OSError)):
-            create_directory(restricted_dir)
+        # This test might vary based on environment
+        try:
+            create_directory('/root/unauthorized_test_dir')
+            pytest.fail("Should have raised an exception")
+        except (PermissionError, OSError):
+            pass
 
 def test_create_directory_permissions():
     """Test directory creation with specific permissions"""
