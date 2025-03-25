@@ -38,8 +38,9 @@ def test_create_nested_directory():
 
 def test_create_directory_unauthorized():
     """Test creating a directory in an unauthorized location"""
-    with pytest.raises(PermissionError):
-        create_directory('/root/unauthorized_dir')
+    if os.name != 'nt':  # Skip on Windows
+        with pytest.raises(PermissionError):
+            create_directory('/root/unauthorized_dir')
 
 def test_create_directory_permissions():
     """Test directory creation with specific permissions"""
