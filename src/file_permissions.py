@@ -27,8 +27,18 @@ def get_file_permissions(file_path):
         PermissionError: If there's no permission to access the file
     """
     try:
-        # Get file stats
-        file_stat = os.stat(file_path)
+        # Check if file exists first
+        if not os.path.exists(file_path):
+            raise FileNotFoundError(f"The file {file_path} does not exist.")
+        
+        # Attempt to access file stats with permission check
+        try:
+            # Get file stats
+            file_stat = os.stat(file_path)
+        except PermissionError:
+            raise PermissionError(f"Permission denied when accessing {file_path}.")
+        
+        # Get file mode
         mode = file_stat.st_mode
 
         # Convert numeric permissions
@@ -59,7 +69,11 @@ def get_file_permissions(file_path):
             'others_write': bool(mode & stat.S_IWOTH),
             'others_execute': bool(mode & stat.S_IXOTH)
         }
-    except FileNotFoundError:
-        raise FileNotFoundError(f"The file {file_path} does not exist.")
-    except PermissionError:
-        raise PermissionError(f"Permission denied when accessing {file_path}.")
+    except Exception as e:
+        # Ensure appropriate exceptions are raised
+        if isinstance(e, FileNotFoundError):
+            raise
+        elif isinstance(e, PermissionError):
+            raise
+        else:
+            raise PermissionError(f"Unable to access file {file_path}: {str(e)}")
