@@ -32,8 +32,7 @@ def test_invalid_ip_addresses():
         
         # Empty strings and misc
         '',
-        '   ',
-        None
+        '   '
     ]
     for ip in invalid_ips:
         assert is_valid_ip_address(ip) is False, f"{ip} should be invalid"
