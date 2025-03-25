@@ -1,7 +1,6 @@
 import os
 import pytest
 import tempfile
-import shutil
 import sys
 
 # Add the src directory to the Python path
@@ -37,8 +36,8 @@ def test_create_nested_directory():
         assert os.path.exists(test_dir)
         assert os.path.isdir(test_dir)
 
-def test_create_directory_invalid_path():
-    """Test creating a directory with an invalid path"""
+def test_create_directory_unauthorized():
+    """Test creating a directory in an unauthorized location"""
     with pytest.raises(PermissionError):
         create_directory('/root/unauthorized_dir')
 
