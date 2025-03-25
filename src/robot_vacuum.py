@@ -25,6 +25,11 @@ def cleanRoom(grid: List[List[int]], r: int, c: int, direction: str) -> int:
     if r < 0 or r >= len(grid) or c < 0 or c >= len(grid[0]):
         raise ValueError("Starting position is out of grid bounds")
     
+    # Check if there are any cleanable cells
+    cleanable_cells = sum(row.count(0) for row in grid)
+    if cleanable_cells == 0:
+        raise ValueError("No cleanable cells in the grid")
+    
     # Directions: North, East, South, West
     directions = ['N', 'E', 'S', 'W']
     
@@ -39,7 +44,6 @@ def cleanRoom(grid: List[List[int]], r: int, c: int, direction: str) -> int:
     
     # Track visited cells and total steps
     visited = set()
-    total_steps = 0
     
     def backtrack(x: int, y: int, curr_dir_idx: int) -> int:
         """
@@ -53,13 +57,12 @@ def cleanRoom(grid: List[List[int]], r: int, c: int, direction: str) -> int:
         Returns:
             int: Minimum steps to clean from current position
         """
-        nonlocal total_steps
-        
-        # Mark current cell as visited
-        visited.add((x, y))
+        # Track total unique steps to reach each cell
+        if (x, y) not in visited:
+            visited.add((x, y))
         
         # Try all 4 directions
-        min_steps = float('inf')
+        total_steps = 0
         for i in range(4):
             # Calculate new direction and position
             new_dir_idx = (curr_dir_idx + i) % 4
@@ -72,18 +75,12 @@ def cleanRoom(grid: List[List[int]], r: int, c: int, direction: str) -> int:
                 total_steps += 1
                 
                 # Recursively explore this path
-                steps = backtrack(new_x, new_y, new_dir_idx)
-                
-                # Update minimum steps
-                min_steps = min(min_steps, steps)
+                total_steps += backtrack(new_x, new_y, new_dir_idx)
         
-        return min_steps
+        return total_steps
     
     # Start direction index
     start_dir_idx = directions.index(direction)
     
     # Start cleaning
-    backtrack(r, c, start_dir_idx)
-    
-    # Return total steps or the number of unique cells cleaned
-    return total_steps if len(visited) > 0 else 0
+    return backtrack(r, c, start_dir_idx)
