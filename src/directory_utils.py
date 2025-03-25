@@ -25,6 +25,11 @@ def create_directory(path: str, mode: Optional[int] = 0o755) -> bool:
         if os.path.exists(normalized_path):
             return False
         
+        # Validate parent directory permissions
+        parent_dir = os.path.dirname(normalized_path)
+        if not os.access(parent_dir, os.W_OK):
+            raise PermissionError(f"No write permission for parent directory: {parent_dir}")
+        
         # Create directory with specified mode
         os.makedirs(normalized_path, mode=mode, exist_ok=False)
         return True
