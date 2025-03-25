@@ -35,6 +35,10 @@ def is_valid_ip_address(ip_string: str) -> bool:
     
     # Validate each octet
     for octet in octets:
+        # Check for whitespace within the octet
+        if ' ' in octet:
+            return False
+        
         # Check if octet is a valid integer
         try:
             # Convert to integer and check range
