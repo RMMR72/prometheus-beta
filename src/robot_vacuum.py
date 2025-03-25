@@ -42,7 +42,7 @@ def cleanRoom(grid: List[List[int]], r: int, c: int, direction: str) -> int:
                 0 <= y < len(grid[0]) and 
                 grid[x][y] == 0)
     
-    # Track visited cells and total steps
+    # Track visited cells
     visited = set()
     
     def backtrack(x: int, y: int, curr_dir_idx: int) -> int:
@@ -55,26 +55,22 @@ def cleanRoom(grid: List[List[int]], r: int, c: int, direction: str) -> int:
             curr_dir_idx (int): Current direction index
         
         Returns:
-            int: Minimum steps to clean from current position
+            int: Number of steps to explore the room
         """
-        # Track total unique steps to reach each cell
-        if (x, y) not in visited:
-            visited.add((x, y))
+        # Mark current cell as visited
+        visited.add((x, y))
         
-        # Try all 4 directions
         total_steps = 0
+        # Try moving in each direction
         for i in range(4):
-            # Calculate new direction and position
+            # New direction (rotating clockwise)
             new_dir_idx = (curr_dir_idx + i) % 4
             dx, dy = moves[new_dir_idx]
             new_x, new_y = x + dx, y + dy
             
-            # Check if the move is valid and not visited
+            # If move is valid and not visited
             if is_valid_move(new_x, new_y) and (new_x, new_y) not in visited:
-                # Take the step
-                total_steps += 1
-                
-                # Recursively explore this path
+                total_steps += 1  # Count the step
                 total_steps += backtrack(new_x, new_y, new_dir_idx)
         
         return total_steps
@@ -82,5 +78,7 @@ def cleanRoom(grid: List[List[int]], r: int, c: int, direction: str) -> int:
     # Start direction index
     start_dir_idx = directions.index(direction)
     
-    # Start cleaning
-    return backtrack(r, c, start_dir_idx)
+    # Start cleaning and explore the room
+    result = backtrack(r, c, start_dir_idx)
+    
+    return result
