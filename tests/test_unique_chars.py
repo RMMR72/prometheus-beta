@@ -29,4 +29,4 @@ def test_extract_unique_chars_error_handling():
 def test_extract_unique_chars_order_preservation():
     # Ensure order of first appearance is preserved
     assert extract_unique_chars("41231231") == "4123"
-    assert extract_unique_chars("91827364") == "918273645"
+    assert extract_unique_chars("91827364") == "91827364"
