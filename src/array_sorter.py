@@ -4,8 +4,9 @@ def sort_array_with_even_squares(arr):
     
     The function does the following:
     1. Sort the entire array in ascending order
-    2. Square the even numbers
-    3. Replace the original even numbers with their squared values
+    2. Identify the positions of even numbers
+    3. Square the even numbers, maintaining their original positions
+    4. Ensure the final list is sorted keeping even squares in their original places
     
     Args:
         arr (list): A list of numbers to be sorted
@@ -25,15 +26,17 @@ def sort_array_with_even_squares(arr):
     if not all(isinstance(x, (int, float)) for x in arr):
         raise ValueError("All elements must be numeric")
     
-    # Create a copy of the input array and sort it
+    # Sort the array 
     sorted_arr = sorted(arr)
     
-    # Square the even numbers while maintaining the sorted order
-    result = []
-    for num in sorted_arr:
-        if num % 2 == 0:
-            result.append(num**2)
-        else:
-            result.append(num)
+    # Find indices of even numbers in the sorted array
+    even_indices = [i for i in range(len(sorted_arr)) if sorted_arr[i] % 2 == 0]
+    
+    # Create a result array to modify
+    result = sorted_arr.copy()
+    
+    # Square the even numbers at those indices
+    for i in even_indices:
+        result[i] = sorted_arr[i]**2
     
     return result
