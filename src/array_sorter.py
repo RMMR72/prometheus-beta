@@ -3,11 +3,10 @@ def sort_array_with_even_squares(arr):
     Sort an array of numbers with a special sorting rule for even numbers.
     
     The function does the following:
-    1. Separate odd and even numbers
-    2. Sort odd numbers
-    3. Sort even numbers (ascending) 
-    4. Square the even numbers
-    5. Merge the lists maintaining the specific order
+    1. Track original positions of even and odd numbers
+    2. Sort the entire input array
+    3. Square the even numbers
+    4. Ensure even numbers maintain original relative positions
     
     Args:
         arr (list): A list of numbers to be sorted
@@ -27,24 +26,18 @@ def sort_array_with_even_squares(arr):
     if not all(isinstance(x, (int, float)) for x in arr):
         raise ValueError("All elements must be numeric")
     
-    # Separate odd and even numbers
-    odd_numbers = sorted([x for x in arr if x % 2 != 0])
-    even_numbers = sorted([x for x in arr if x % 2 == 0])
+    # Create a list of tuples with original index, value
+    indexed_arr = list(enumerate(arr))
     
-    # Square the even numbers while preserving their original order
-    squared_even_numbers = [num**2 for num in even_numbers]
+    # Sort the array by value 
+    sorted_indexed = sorted(indexed_arr, key=lambda x: x[1])
     
-    # Merge the lists
-    result = []
-    odd_index = 0
-    even_index = 0
+    # Create result array
+    result = [0] * len(arr)
     
-    while odd_index < len(odd_numbers) or even_index < len(squared_even_numbers):
-        if odd_index < len(odd_numbers) and (even_index == len(squared_even_numbers) or odd_numbers[odd_index] <= squared_even_numbers[even_index]):
-            result.append(odd_numbers[odd_index])
-            odd_index += 1
-        else:
-            result.append(squared_even_numbers[even_index])
-            even_index += 1
+    # Fill result array with sorted values
+    for i, (orig_index, val) in enumerate(sorted_indexed):
+        # Square even numbers
+        result[orig_index] = val**2 if val % 2 == 0 else val
     
     return result
