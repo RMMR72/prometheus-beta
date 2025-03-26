@@ -16,20 +16,20 @@ def extract_unique_chars(number_string):
     if not isinstance(number_string, str):
         raise TypeError("Input must be a string")
     
+    # Empty string is a valid input
+    if not number_string:
+        return ""
+    
     # Check for non-numeric characters
     if not number_string.isdigit():
         raise ValueError("Input must contain only numeric characters")
     
-    # If string is empty, return empty string
-    if not number_string:
-        return ""
-    
-    # Manual unique character extraction
-    unique_chars = []
+    # Manual unique character extraction that preserves original order
+    result = []
     for char in number_string:
-        # Only add if character not already in unique_chars
-        if char not in unique_chars:
-            unique_chars.append(char)
+        # Only add if character not in result
+        if char not in result:
+            result.append(char)
     
-    # Convert unique characters back to string
-    return ''.join(unique_chars)
+    # Convert result back to string
+    return ''.join(result)
