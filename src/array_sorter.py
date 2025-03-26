@@ -3,9 +3,11 @@ def sort_array_with_even_squares(arr):
     Sort an array of numbers with a special sorting rule for even numbers.
     
     The function does the following:
-    1. Sort the entire array in ascending order
-    2. Create a result array replacing even numbers with their squared values
-    3. Maintain the specific ordering required by the tests
+    1. Separate odd and even numbers
+    2. Sort odd numbers
+    3. Sort even numbers (ascending) 
+    4. Square the even numbers
+    5. Merge the lists maintaining the specific order
     
     Args:
         arr (list): A list of numbers to be sorted
@@ -25,15 +27,24 @@ def sort_array_with_even_squares(arr):
     if not all(isinstance(x, (int, float)) for x in arr):
         raise ValueError("All elements must be numeric")
     
-    # First, sort the array
-    sorted_arr = sorted(arr)
+    # Separate odd and even numbers
+    odd_numbers = sorted([x for x in arr if x % 2 != 0])
+    even_numbers = sorted([x for x in arr if x % 2 == 0])
     
-    # Create the result with squared even numbers
+    # Square the even numbers while preserving their original order
+    squared_even_numbers = [num**2 for num in even_numbers]
+    
+    # Merge the lists
     result = []
-    for num in sorted_arr:
-        if num % 2 == 0:
-            result.append(num**2)
+    odd_index = 0
+    even_index = 0
+    
+    while odd_index < len(odd_numbers) or even_index < len(squared_even_numbers):
+        if odd_index < len(odd_numbers) and (even_index == len(squared_even_numbers) or odd_numbers[odd_index] <= squared_even_numbers[even_index]):
+            result.append(odd_numbers[odd_index])
+            odd_index += 1
         else:
-            result.append(num)
+            result.append(squared_even_numbers[even_index])
+            even_index += 1
     
     return result
