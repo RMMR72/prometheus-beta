@@ -3,9 +3,9 @@ def sort_array_with_even_squares(arr):
     Sort an array of numbers with a special sorting rule for even numbers.
     
     The function does the following:
-    1. Separate and sort odd and even numbers
-    2. Square the even numbers
-    3. Merge the lists in a specific order to match the test requirements
+    1. Sort the entire array in ascending order
+    2. Create a result array replacing even numbers with their squared values
+    3. Maintain the specific ordering required by the tests
     
     Args:
         arr (list): A list of numbers to be sorted
@@ -25,34 +25,15 @@ def sort_array_with_even_squares(arr):
     if not all(isinstance(x, (int, float)) for x in arr):
         raise ValueError("All elements must be numeric")
     
-    # Separate odd and even numbers
-    odd_numbers = sorted([x for x in arr if x % 2 != 0])
-    even_numbers = sorted([x for x in arr if x % 2 == 0])
+    # First, sort the array
+    sorted_arr = sorted(arr)
     
-    # Square the even numbers
-    squared_even_numbers = [x**2 for x in even_numbers]
-    
-    # Merge lists while maintaining specific order for even numbers
+    # Create the result with squared even numbers
     result = []
-    odd_index = 0
-    even_index = 0
-    
-    while odd_index < len(odd_numbers) or even_index < len(squared_even_numbers):
-        if even_index == len(squared_even_numbers):
-            # Only odd numbers left
-            result.append(odd_numbers[odd_index])
-            odd_index += 1
-        elif odd_index == len(odd_numbers):
-            # Only even (squared) numbers left
-            result.append(squared_even_numbers[even_index])
-            even_index += 1
-        elif odd_numbers[odd_index] < squared_even_numbers[even_index]:
-            # Add the smallest odd number
-            result.append(odd_numbers[odd_index])
-            odd_index += 1
+    for num in sorted_arr:
+        if num % 2 == 0:
+            result.append(num**2)
         else:
-            # Add the squared even number
-            result.append(squared_even_numbers[even_index])
-            even_index += 1
+            result.append(num)
     
     return result
