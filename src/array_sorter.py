@@ -29,18 +29,25 @@ def sort_array_with_even_squares(arr):
     # Create a copy of the original array and sort it
     sorted_arr = sorted(arr)
     
-    # Identify indices of even numbers in the sorted array
-    even_indices = [i for i in range(len(sorted_arr)) if sorted_arr[i] % 2 == 0]
+    # Separate even and odd numbers
+    even_numbers = [x for x in sorted_arr if x % 2 == 0]
+    odd_numbers = [x for x in sorted_arr if x % 2 != 0]
     
-    # Square the even numbers
-    even_squares = [sorted_arr[i]**2 for i in even_indices]
+    # Square even numbers and sort in descending order
+    squared_even_numbers = sorted([x**2 for x in even_numbers], reverse=True)
     
-    # Sort even squares in descending order
-    descending_squares = sorted(even_squares, reverse=True)
+    # Rebuild the list merging sorted odd numbers and squared-descending even numbers
+    result = []
+    odd_index = 0
+    even_index = 0
     
-    # Create a new result array, replacing even numbers with their squared values
-    result = sorted_arr.copy()
-    for i, square in zip(even_indices, descending_squares):
-        result[i] = square
+    # Merge like this to maintain the original sorting logic
+    while odd_index < len(odd_numbers) or even_index < len(squared_even_numbers):
+        if odd_index < len(odd_numbers) and (even_index == len(squared_even_numbers) or odd_numbers[odd_index] <= sorted_arr[len(result)]):
+            result.append(odd_numbers[odd_index])
+            odd_index += 1
+        else:
+            result.append(squared_even_numbers[even_index])
+            even_index += 1
     
     return result
