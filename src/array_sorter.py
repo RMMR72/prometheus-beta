@@ -25,12 +25,14 @@ def sort_array_with_even_squares(arr):
     if not all(isinstance(x, (int, float)) for x in arr):
         raise ValueError("All elements must be numeric")
     
-    # Sort and create a new array
+    # Sort the input array
     sorted_arr = sorted(arr)
     
-    # Square even numbers in the sorted array
-    for i in range(len(sorted_arr)):
-        if sorted_arr[i] % 2 == 0:
-            sorted_arr[i] = sorted_arr[i]**2
+    # Identify and square even numbers
+    even_indices = [i for i in range(len(sorted_arr)) if sorted_arr[i] % 2 == 0]
+    
+    # Replace even numbers with their squares
+    for i in even_indices:
+        sorted_arr[i] **= 2
     
     return sorted_arr
