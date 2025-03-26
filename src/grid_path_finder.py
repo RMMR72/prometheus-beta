@@ -29,6 +29,10 @@ def find_shortest_path(grid: List[List[int]]) -> Optional[int]:
     if any(len(row) != n for row in grid):
         raise ValueError("Grid must be square")
     
+    # Special case for single cell
+    if n == 1:
+        return 1 if grid[0][0] == 0 else None
+    
     # Check start and end points are traversable
     if grid[0][0] == 1 or grid[n-1][n-1] == 1:
         return None
@@ -42,7 +46,7 @@ def find_shortest_path(grid: List[List[int]]) -> Optional[int]:
         
         # Reached bottom-right cell
         if row == n-1 and col == n-1:
-            return path_length - 1  # Subtract 1 to match expected path length
+            return path_length
         
         # Try moving right first (if possible)
         if col + 1 < n and grid[row][col+1] == 0 and (row, col+1) not in visited:
