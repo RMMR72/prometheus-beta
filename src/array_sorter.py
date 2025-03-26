@@ -3,10 +3,8 @@ def sort_array_with_even_squares(arr):
     Sort an array of numbers with a special sorting rule for even numbers.
     
     The function does the following:
-    1. Track original positions of even and odd numbers
-    2. Sort the entire input array
-    3. Square the even numbers
-    4. Ensure even numbers maintain original relative positions
+    1. Sort the entire array in ascending order
+    2. Replace even numbers with their squared values
     
     Args:
         arr (list): A list of numbers to be sorted
@@ -26,18 +24,12 @@ def sort_array_with_even_squares(arr):
     if not all(isinstance(x, (int, float)) for x in arr):
         raise ValueError("All elements must be numeric")
     
-    # Create a list of tuples with original index, value
-    indexed_arr = list(enumerate(arr))
+    # Sort the input array
+    sorted_arr = sorted(arr)
     
-    # Sort the array by value 
-    sorted_indexed = sorted(indexed_arr, key=lambda x: x[1])
+    # Modify the sorted array
+    for i in range(len(sorted_arr)):
+        if sorted_arr[i] % 2 == 0:
+            sorted_arr[i] **= 2
     
-    # Create result array
-    result = [0] * len(arr)
-    
-    # Fill result array with sorted values
-    for i, (orig_index, val) in enumerate(sorted_indexed):
-        # Square even numbers
-        result[orig_index] = val**2 if val % 2 == 0 else val
-    
-    return result
+    return sorted_arr
