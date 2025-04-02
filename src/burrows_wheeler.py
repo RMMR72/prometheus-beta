@@ -59,31 +59,48 @@ def inverse_burrows_wheeler_transform(bwt):
     if len(bwt) == 2 and '$' in bwt:
         return bwt[0]
     
-    # First-last column mapping
-    n = len(bwt)
-    
-    # Step 1: Sort the characters of the BWT
+    # Sort the last column to get the first column
     first_column = sorted(bwt)
     
-    # Keep track of character indices
-    next_index = {char: [i for i, x in enumerate(bwt) if x == char] 
-                  for char in set(bwt)}
-    indices_used = {char: 0 for char in set(bwt)}
+    # Create a mapping from characters in the last column to their first column indices
+    n = len(bwt)
     
-    # Reconstruct the original text
+    # Count the occurrences of each character
+    char_counts = {}
+    
+    # Will store the indices in the first column where each character appears
+    first_occurrence = {}
+    
+    # Create the mapping
+    for i, char in enumerate(first_column):
+        # Count occurrences to handle repeated characters
+        if char not in char_counts:
+            char_counts[char] = 0
+            first_occurrence[char] = i
+        char_counts[char] += 1
+    
+    # Reset character counts for last column
+    char_counts = {char: 0 for char in first_column}
+    
+    # Reconstruct the original string
     result = []
     current_index = bwt.index('$')
     
-    # Reconstruct until we've processed all characters except the terminator
     for _ in range(n - 1):
-        # Get the character at the current index in the first column
-        current_char = first_column[current_index]
-        result.append(current_char)
+        # Follow the last-first mapping
+        current_char = bwt[current_index]
         
-        # Find the next index by looking up the same character 
-        # in the order of its occurrence in the last column
-        occurrence = indices_used[current_char]
-        current_index = next_index[current_char][occurrence]
-        indices_used[current_char] += 1
+        # Find the corresponding index in the first column
+        count = char_counts.get(current_char, 0)
+        next_index = first_occurrence[current_char] + count
+        
+        # Add the character
+        result.append(first_column[next_index])
+        
+        # Update the count for this character
+        char_counts[current_char] = count + 1
+        
+        # Update the current index to the next character in the last column
+        current_index = next_index
     
     return ''.join(result)
