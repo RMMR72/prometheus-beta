@@ -59,41 +59,34 @@ def inverse_burrows_wheeler_transform(bwt):
     if len(bwt) == 2 and '$' in bwt:
         return bwt[0]
     
-    # Prepare first and last columns
-    last_column = list(bwt)
-    first_column = sorted(last_column)
+    # First-Last Property: build first column from sorted last column
+    n = len(bwt)
+    first_column = sorted(bwt)
     
-    # Create a table that maps each character in the last column
-    # to its corresponding character in the first column
-    n = len(last_column)
-    occurrence_count = {}
-    next_mapping = [0] * n
+    # Create mapping from last column to first column
+    # This helps us reconstruct the original text
+    # We'll use counting to handle repeated characters
+    last_column_indices = {}
+    next_indices = [0] * n
     
-    # Create mapping
-    for i in range(n):
-        char = last_column[i]
+    for i, char in enumerate(bwt):
+        if char not in last_column_indices:
+            last_column_indices[char] = 0
         
-        # Calculate the occurrence of this character in first_column
-        if char not in occurrence_count:
-            occurrence_count[char] = 0
-        current_occurrence = occurrence_count[char]
+        # Find the index of this character in first column
+        current_count = last_column_indices[char]
+        current_index = first_column.index(char, current_count)
         
-        # Find the index of this occurrence in the first_column
-        current_index = first_column.index(char, current_occurrence)
-        
-        # Map last column index to first column index
-        next_mapping[i] = current_index
-        
-        # Update occurrence count
-        occurrence_count[char] += 1
+        next_indices[i] = current_index
+        last_column_indices[char] += 1
     
-    # Reconstruct the original string
+    # Reconstruct the original text
     result = []
-    current_index = last_column.index('$')
+    current_index = bwt.index('$')
     
     # Skip the terminator
     for _ in range(n - 1):
-        current_index = next_mapping[current_index]
+        current_index = next_indices[current_index]
         result.append(first_column[current_index])
     
     return ''.join(result)
