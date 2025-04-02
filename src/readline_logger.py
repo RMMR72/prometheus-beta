@@ -40,17 +40,21 @@ class ReadlineLogger:
         """
         while True:
             try:
+                # Log the prompt explicitly
+                self.logger.log(log_level, f"Prompt: {prompt}")
+                
                 # Use readline for interactive input
                 user_input = input(prompt)
                 
-                # Log the prompt and input
-                self.logger.log(log_level, f"Prompt: {prompt}")
+                # Log the input explicitly 
                 self.logger.log(log_level, f"User Input: {user_input}")
                 
                 # Validate input if a validator is provided
                 if validator:
                     if not validator(user_input):
-                        raise ValueError("Input validation failed")
+                        self.logger.error("Input validation failed")
+                        print("Invalid input. Please try again.")
+                        continue
                 
                 return user_input
             
