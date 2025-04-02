@@ -1,1 +1,2 @@
 pytest
+# No additional external dependencies needed
