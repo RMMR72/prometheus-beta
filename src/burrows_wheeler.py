@@ -59,34 +59,41 @@ def inverse_burrows_wheeler_transform(bwt):
     if len(bwt) == 2 and '$' in bwt:
         return bwt[0]
     
-    # First-Last Property
+    # First-last property mapping
     n = len(bwt)
-    
-    # Create first column by sorting last column
     first_column = sorted(bwt)
     
-    # Track the next links in the First-Last Property
-    next_occurrence = {}
-    next_links = [0] * n
+    # Create a mapping to track character occurrences
+    last_count = {}
+    first_count = {}
+    last_indices = {}
     
+    # Prepare occurrence tracking for both last and first columns
     for i, char in enumerate(bwt):
-        if char not in next_occurrence:
-            next_occurrence[char] = 0
+        if char not in last_count:
+            last_count[char] = 0
+            first_count[char] = 0
+            last_indices[char] = []
         
-        # Find the correct index in first_column based on occurrences
-        current_count = next_occurrence[char]
-        index = first_column.index(char, current_count)
-        
-        next_links[i] = index
-        next_occurrence[char] += 1
+        last_indices[char].append(i)
+        last_count[char] += 1
     
     # Reconstruct the original text
     result = []
     current_index = bwt.index('$')
     
-    # Skip the terminator
     for _ in range(n - 1):
-        current_index = next_links[current_index]
-        result.append(first_column[current_index])
+        # Find the corresponding character in the first column
+        current_char = bwt[current_index]
+        
+        # Find next occurrence based on first-last property
+        index_in_first = first_column.index(current_char, first_count[current_char])
+        
+        # Append the character
+        result.append(first_column[index_in_first])
+        
+        # Update counts and move to next index
+        first_count[current_char] += 1
+        current_index = last_indices[current_char][first_count[current_char] - 1]
     
     return ''.join(result)
