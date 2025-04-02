@@ -59,41 +59,31 @@ def inverse_burrows_wheeler_transform(bwt):
     if len(bwt) == 2 and '$' in bwt:
         return bwt[0]
     
-    # First-last property mapping
+    # First-last column mapping
     n = len(bwt)
+    
+    # Step 1: Sort the characters of the BWT
     first_column = sorted(bwt)
     
-    # Create a mapping to track character occurrences
-    last_count = {}
-    first_count = {}
-    last_indices = {}
-    
-    # Prepare occurrence tracking for both last and first columns
-    for i, char in enumerate(bwt):
-        if char not in last_count:
-            last_count[char] = 0
-            first_count[char] = 0
-            last_indices[char] = []
-        
-        last_indices[char].append(i)
-        last_count[char] += 1
+    # Keep track of character indices
+    next_index = {char: [i for i, x in enumerate(bwt) if x == char] 
+                  for char in set(bwt)}
+    indices_used = {char: 0 for char in set(bwt)}
     
     # Reconstruct the original text
     result = []
     current_index = bwt.index('$')
     
+    # Reconstruct until we've processed all characters except the terminator
     for _ in range(n - 1):
-        # Find the corresponding character in the first column
-        current_char = bwt[current_index]
+        # Get the character at the current index in the first column
+        current_char = first_column[current_index]
+        result.append(current_char)
         
-        # Find next occurrence based on first-last property
-        index_in_first = first_column.index(current_char, first_count[current_char])
-        
-        # Append the character
-        result.append(first_column[index_in_first])
-        
-        # Update counts and move to next index
-        first_count[current_char] += 1
-        current_index = last_indices[current_char][first_count[current_char] - 1]
+        # Find the next index by looking up the same character 
+        # in the order of its occurrence in the last column
+        occurrence = indices_used[current_char]
+        current_index = next_index[current_char][occurrence]
+        indices_used[current_char] += 1
     
     return ''.join(result)
