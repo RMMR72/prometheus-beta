@@ -55,31 +55,45 @@ def inverse_burrows_wheeler_transform(bwt):
     if len(bwt) == 0:
         raise ValueError("Input string cannot be empty")
     
+    # Special case for single character + terminator
+    if len(bwt) == 2 and '$' in bwt:
+        return bwt[0]
+    
     # Prepare first and last columns
     last_column = list(bwt)
     first_column = sorted(last_column)
     
-    # Initialize arrays for tracking
-    next_char = [0] * len(last_column)
+    # Create a table that maps each character in the last column
+    # to its corresponding character in the first column
+    n = len(last_column)
+    occurrence_count = {}
+    next_mapping = [0] * n
     
-    # Compute the last-first mapping
-    for i in range(len(last_column)):
-        # Find the index of the character in the first column
+    # Create mapping
+    for i in range(n):
         char = last_column[i]
-        index = first_column.index(char)
         
-        # Update tracking
-        next_char[i] = index
+        # Calculate the occurrence of this character in first_column
+        if char not in occurrence_count:
+            occurrence_count[char] = 0
+        current_occurrence = occurrence_count[char]
         
-        # Remove the first occurrence of the character to handle duplicates
-        first_column.remove(char)
+        # Find the index of this occurrence in the first_column
+        current_index = first_column.index(char, current_occurrence)
+        
+        # Map last column index to first column index
+        next_mapping[i] = current_index
+        
+        # Update occurrence count
+        occurrence_count[char] += 1
     
     # Reconstruct the original string
     result = []
-    current_index = last_column.index('$')  # Start at the terminator
+    current_index = last_column.index('$')
     
-    for _ in range(len(last_column) - 1):
-        current_index = next_char[current_index]
+    # Skip the terminator
+    for _ in range(n - 1):
+        current_index = next_mapping[current_index]
         result.append(first_column[current_index])
     
     return ''.join(result)
