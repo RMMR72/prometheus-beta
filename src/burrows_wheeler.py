@@ -55,33 +55,19 @@ def inverse_burrows_wheeler_transform(bwt):
     if len(bwt) == 0:
         raise ValueError("Input string cannot be empty")
     
-    # Create a table to track character frequencies
-    char_count = {}
-    next_occurrence = {}
+    # Add sentinels to uniquely track characters
+    bwt_indexed = list(enumerate(bwt))
     
-    # First pass: count character frequencies and initialize next_occurrence
-    for char in bwt:
-        if char not in char_count:
-            char_count[char] = 0
-            next_occurrence[char] = 0
-        char_count[char] += 1
+    # Sort the indexed bwt while preserving original indices
+    sorted_bwt = sorted(bwt_indexed)
     
-    # Sort first and last columns
-    first_column = sorted(bwt)
-    
-    # Create a mapping from indices in the last column to first column
-    table = [0] * len(bwt)
-    for i, char in enumerate(first_column):
-        occurrences = next_occurrence.get(char, 0)
-        table[i] = bwt.index(char, occurrences)
-        next_occurrence[char] = table[i] + 1
-    
-    # Reconstruct the original string
-    result = []
-    current_index = bwt.index('$')
+    # Reconstruct using LF mapping (last to first column mapping)
+    reconstructed = []
+    current_index = sorted_bwt.index((bwt.index('$'), '$'))
     
     for _ in range(len(bwt) - 1):
-        current_index = table[current_index]
-        result.append(first_column[current_index])
+        current_tuple = sorted_bwt[current_index]
+        reconstructed.append(current_tuple[1])
+        current_index = sorted_bwt.index(current_tuple)
     
-    return ''.join(result)
+    return ''.join(reconstructed)
