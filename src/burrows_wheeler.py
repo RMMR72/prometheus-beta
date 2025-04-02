@@ -59,30 +59,32 @@ def inverse_burrows_wheeler_transform(bwt):
     if len(bwt) == 2 and '$' in bwt:
         return bwt[0]
     
-    # Sort the last column to get the first column
+    # Create first column by sorting last column
+    n = len(bwt)
     first_column = sorted(bwt)
     
-    # Compute the mapping between last and first columns
-    n = len(bwt)
+    # Compute the last-to-first column mapping
+    next_indices = [0] * n
+    char_count = {}
     
-    # Track the occurrences of each character
-    last_count = {char: 0 for char in set(bwt)}
-    first_count = {char: 0 for char in set(first_column)}
-    
-    # Create the mapping from last column to first column
-    next_char = [0] * n
     for i in range(n):
         char = bwt[i]
-        first_position = first_column.index(char, first_count[char])
-        next_char[i] = first_position
-        first_count[char] += 1
+        if char not in char_count:
+            char_count[char] = 0
+        
+        # Find the first occurrence of this character in the first column
+        next_index = first_column.index(char, char_count[char])
+        next_indices[i] = next_index
+        
+        # Increment the count for this character
+        char_count[char] += 1
     
-    # Reconstruct the original text
+    # Reconstruct the text, working backwards from the terminator
     result = []
     current_index = bwt.index('$')
     
     for _ in range(n - 1):
-        current_index = next_char[current_index]
+        current_index = next_indices[current_index]
         result.append(first_column[current_index])
     
     return ''.join(result)
