@@ -1,3 +1,5 @@
+import re
+
 def to_dot_case(input_string):
     """
     Convert a given string to dot case.
@@ -33,9 +35,11 @@ def to_dot_case(input_string):
     if not input_string:
         return ""
     
-    # Replace various separators with a single space
-    for separator in ['_', '-', ' ']:
-        input_string = input_string.replace(separator, ' ')
+    # First, replace any underscores or hyphens with spaces
+    input_string = re.sub(r'[_-]', ' ', input_string)
+    
+    # Split camelCase or PascalCase
+    input_string = re.sub(r'(?<!^)(?=[A-Z])', ' ', input_string)
     
     # Split by spaces, convert to lowercase, and join with dot
     return '.'.join(word.lower() for word in input_string.split())
