@@ -55,28 +55,33 @@ def inverse_burrows_wheeler_transform(bwt):
     if len(bwt) == 0:
         raise ValueError("Input string cannot be empty")
     
-    # Create sorted list of characters for first column
+    # Create a table to track character frequencies
+    char_count = {}
+    next_occurrence = {}
+    
+    # First pass: count character frequencies and initialize next_occurrence
+    for char in bwt:
+        if char not in char_count:
+            char_count[char] = 0
+            next_occurrence[char] = 0
+        char_count[char] += 1
+    
+    # Sort first and last columns
     first_column = sorted(bwt)
     
-    # Create mapping for reconstruction
-    mapping = {}
-    for i, char in enumerate(bwt):
-        if char not in mapping:
-            mapping[char] = 0
-        mapping[char] += 1
+    # Create a mapping from indices in the last column to first column
+    table = [0] * len(bwt)
+    for i, char in enumerate(first_column):
+        occurrences = next_occurrence.get(char, 0)
+        table[i] = bwt.index(char, occurrences)
+        next_occurrence[char] = table[i] + 1
     
-    # Build the original text
-    reconstructed = [''] * len(bwt)
-    next_char_index = bwt.index('$')
-    for i in range(len(bwt) - 1, -1, -1):
-        reconstructed[i] = bwt[next_char_index]
-        
-        # Update next_char_index by finding the correct position in the first column
-        current_char = bwt[next_char_index]
-        count = mapping.get(current_char, 0)
-        
-        next_char_index = first_column.index(current_char)
-        mapping[current_char] -= 1
+    # Reconstruct the original string
+    result = []
+    current_index = bwt.index('$')
     
-    # Remove the terminator and return
-    return ''.join(reconstructed).rstrip('$')
+    for _ in range(len(bwt) - 1):
+        current_index = table[current_index]
+        result.append(first_column[current_index])
+    
+    return ''.join(result)
